@@ -16,7 +16,7 @@ public class Main {
     private static final String URL =
             "https://raw.githubusercontent.com/netology-code/jd-homeworks/master/http/task1/cats";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setConnectTimeout(5000)
@@ -26,17 +26,20 @@ public class Main {
                 .build();
 
         HttpGet request = new HttpGet(URL);
-        CloseableHttpResponse response = httpClient.execute(request);
+        try (CloseableHttpResponse response = httpClient.execute(request)) {
 
-        ObjectMapper mapper = new ObjectMapper();
-        List<FactsAboutCats> factsAboutCatsList =
-                mapper.readValue(response.getEntity().getContent(), new TypeReference<>() {
-                });
+            ObjectMapper mapper = new ObjectMapper();
+            List<FactsAboutCats> factsAboutCatsList =
+                    mapper.readValue(response.getEntity().getContent(), new TypeReference<>() {
+                    });
 
-        List<FactsAboutCats> votesNotNull = factsAboutCatsList.stream()
-                .filter(f -> f.getUpvotes() != null)
-                .filter(f -> Integer.parseInt(f.getUpvotes()) > 0)
-                .collect(Collectors.toList());
-        votesNotNull.forEach(System.out::println);
+            List<FactsAboutCats> votesNotNull = factsAboutCatsList.stream()
+                    .filter(f -> f.getUpvotes() != null)
+                    .filter(f -> Integer.parseInt(f.getUpvotes()) > 0)
+                    .collect(Collectors.toList());
+            votesNotNull.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
