@@ -17,7 +17,8 @@ public class Main {
             "https://raw.githubusercontent.com/netology-code/jd-homeworks/master/http/task1/cats";
 
     public static void main(String[] args) {
-        CloseableHttpClient httpClient = HttpClientBuilder.create()
+        HttpGet request = new HttpGet(URL);
+        try (CloseableHttpClient httpClient = HttpClientBuilder.create()
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setConnectTimeout(5000)
                         .setSocketTimeout(30000)
@@ -25,8 +26,7 @@ public class Main {
                         .build())
                 .build();
 
-        HttpGet request = new HttpGet(URL);
-        try (CloseableHttpResponse response = httpClient.execute(request)) {
+        CloseableHttpResponse response = httpClient.execute(request)) {
 
             ObjectMapper mapper = new ObjectMapper();
             List<FactsAboutCats> factsAboutCatsList =
